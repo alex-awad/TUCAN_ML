@@ -2,6 +2,7 @@ import networkx as nx
 from tucan.element_properties import ELEMENT_PROPS
 from rdkit import Chem
 from typing import List, Tuple
+from .molecular_calculations import bond_length_from_bond_tuple
 
 
 def graph_from_file(filepath):
@@ -52,19 +53,44 @@ def graph_from_moldata(element_symbols: List[str], bonds: List[Tuple[int]]):
     return graph
 
 
-def _parse_molfile3000(filecontent: str):
+def _parse_molfile3000(filecontent: str, get_bond_lengths: bool = False):
+    raw_lines = filecontent.splitlines()
+    # Check if molfile is saved from 2D source if bond lengths are calculated. 
+    # This is not not recommended, since the coordinates of a 2D origin might
+    # represent the position in the 2D depiction, not the assumed 3D positions.
+    if get_bond_lengths:
+        if "2D" in raw_lines[0] or "2D" in raw_lines[1]:
+            print("""WARNING: Parsed .mol file includes only 2D information.
+                  Bond lengths might not be calculated correctly!""")
+    
     lines = [l.rstrip().split(" ") for l in filecontent.splitlines()]
     lines = [[value for value in line if value != ""] for line in lines]
     atom_count = int(lines[5][3])
     bond_count = int(lines[5][4])
     atom_block_offset = 7
     bond_block_offset = atom_block_offset + atom_count + 2
+    
+    # Get element symbols of the atoms in the file
     element_symbols = [
         l[3] for l in lines[atom_block_offset : atom_block_offset + atom_count]
     ]
     assert (
         len(element_symbols) == atom_count
     ), f"Number of atoms {len(element_symbols)} doesn't match atom-count specified in header {atom_count}."
+    
+    # Get x, y, and z position of each atom
+    atom_x_positions = [
+        float(l[4]) for l in lines[atom_block_offset : atom_block_offset + atom_count]
+    ]
+    atom_y_positions = [
+        float(l[5]) for l in lines[atom_block_offset : atom_block_offset + atom_count]
+    ]
+    atom_z_positions = [
+        float(l[6]) for l in lines[atom_block_offset : atom_block_offset + atom_count]
+    ]
+    atom_positions = list(zip(atom_x_positions, atom_y_positions, atom_z_positions))
+    
+    # Get bonds as tuple of atoms forming the bond
     bonds = [
         (int(l[4]) - 1, int(l[5]) - 1)
         for l in lines[bond_block_offset : bond_block_offset + bond_count]
@@ -72,6 +98,14 @@ def _parse_molfile3000(filecontent: str):
     assert (
         len(bonds) == bond_count
     ), f"Number of bonds {len(bonds)} doesn't match bond-count specified in header {bond_count}."
+    
+    # Calculate bond lengths
+    bond_lengths = [
+        bond_length_from_bond_tuple(bond, atom_positions) for bond in bonds
+    ]
+    if get_bond_lengths:
+        return element_symbols, bonds, bond_lengths
+    
     return element_symbols, bonds
 
 
