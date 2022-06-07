@@ -28,7 +28,11 @@ def _molfile3000_from_smiles(smiles: str):
     return Chem.MolToMolBlock(m, forceV3000=True, includeStereo=False, kekulize=False)
 
 
-def graph_from_moldata(element_symbols: List[str], bonds: List[Tuple[int]]):
+def graph_from_moldata(
+    element_symbols: List[str],
+    bonds: List[Tuple[int]],
+    bond_lengths: List[float] = None
+    ):
     """Instantiate a NetworkX graph from molecular data.
 
     Parameters
@@ -37,6 +41,9 @@ def graph_from_moldata(element_symbols: List[str], bonds: List[Tuple[int]]):
         Element symbols associated with the atoms.
     bonds: List[Tuple[int, int]]
         Bonds between atoms.
+    bond_lengths: List[float]
+        Bond lenghts of each bond. Index corresponds to the index of bonds.
+        Defaults to None.
     """
     atomic_numbers = [ELEMENT_PROPS[s]["atomic_number"] for s in element_symbols]
     node_labels = range(len(element_symbols))
@@ -49,6 +56,12 @@ def graph_from_moldata(element_symbols: List[str], bonds: List[Tuple[int]]):
     nx.set_node_attributes(
         graph, dict(zip(node_labels, atomic_numbers)), "atomic_number"
     )
+    
+    if bond_lengths is not None:
+        nx.set_edge_attributes(
+            graph, dict(zip(bonds, bond_lengths)), "bond_length"
+        )
+        
     nx.set_node_attributes(graph, 0, "partition")
     return graph
 
