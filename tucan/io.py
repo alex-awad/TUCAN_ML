@@ -2,7 +2,7 @@ import networkx as nx
 from tucan.element_properties import ELEMENT_PROPS
 from rdkit import Chem
 from typing import List, Tuple
-from .molecular_calculations import bond_length_from_bond_tuple
+from tucan.molecular_calculations import bond_length_from_bond_tuple
 
 
 def graph_from_file(filepath):
