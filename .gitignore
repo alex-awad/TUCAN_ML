@@ -3,3 +3,4 @@ __pycache__/
 .pytest_cache
 tests/chembl_30_smiles.txt
 dev_testing/
+**/*.ipynb

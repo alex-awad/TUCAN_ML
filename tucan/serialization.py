@@ -9,6 +9,10 @@ def serialize_molecule(m):
     m_sorted_by_atomic_number = sort_molecule_by_attribute(m, "atomic_number")
     for edge in _edge_list(m_sorted_by_atomic_number):
         serialization += f"/{edge[0] + 1}-{edge[1] + 1}"
+    serialization += "/"
+    for edge in _edge_list(m_sorted_by_atomic_number):
+        serialization += f"/{m_sorted_by_atomic_number.get_edge_data(edge[0], edge[1])['bond_length']:.4f}"
+    
     return serialization
 
 

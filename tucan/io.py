@@ -5,15 +5,21 @@ from typing import List, Tuple
 from tucan.molecular_calculations import bond_length_from_bond_tuple
 
 
-def graph_from_file(filepath):
+def graph_from_file(filepath, get_bond_lengths: bool=False):
     with open(filepath) as f:
         filecontent = f.read()
     if filepath.suffix == ".mol":
-        element_symbols, bonds = _parse_molfile3000(filecontent)
+        if get_bond_lengths:
+            element_symbols, bonds, bond_lengths = _parse_molfile3000(filecontent, get_bond_lengths=True)
+        else:
+            element_symbols, bonds = _parse_molfile3000(filecontent)
     elif filepath.suffix == ".col":
         element_symbols, bonds = _parse_dimacs(filecontent)
     else:
         raise IOError("Invalid file format, must be one of {.mol, .col}.")
+    if get_bond_lengths:
+         return graph_from_moldata(element_symbols, bonds, bond_lengths)
+     
     return graph_from_moldata(element_symbols, bonds)
 
 
