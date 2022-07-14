@@ -7,12 +7,17 @@ def serialize_molecule(m):
     """Serialize a molecule."""
     serialization = _sum_formula(m)
     m_sorted_by_atomic_number = sort_molecule_by_attribute(m, "atomic_number")
-    for edge in _edge_list(m_sorted_by_atomic_number):
+    edge_list = _edge_list(m_sorted_by_atomic_number)
+    for edge in edge_list:
         serialization += f"/{edge[0] + 1}-{edge[1] + 1}"
-    serialization += "/"
-    for edge in _edge_list(m_sorted_by_atomic_number):
-        serialization += f"/{m_sorted_by_atomic_number.get_edge_data(edge[0], edge[1])['bond_length']:.4f}"
     
+    # Check if bond lengths are present in the string
+    if 'bond_length' in m_sorted_by_atomic_number.get_edge_data(edge_list[0][0], edge_list[0][1]):
+        print("bond length is an attribute!")
+        serialization += "/"
+        for edge in _edge_list(m_sorted_by_atomic_number):
+            serialization += f"/{m_sorted_by_atomic_number.get_edge_data(edge[0], edge[1])['bond_length']:.4f}"
+        
     return serialization
 
 
