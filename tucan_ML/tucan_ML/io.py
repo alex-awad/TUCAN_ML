@@ -2,8 +2,8 @@
 
 from tucan.canonicalization import (
     assign_canonical_labels,
-    _add_invariant_code,
-    serialize_molecule)
+    _add_invariant_code)
+from tucan.serialization import serialize_molecule
 from tucan.io import graph_from_file
 from pathlib import Path
 import networkx as nx
