@@ -1,0 +1,22 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "tucan_ML"
+authors = [{name = "Alexander J. Awad", email = "alexander.jon.awad@gmail.com"}]
+license = {file = "LICENSE"}
+classifiers = ["License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)"]
+dynamic = ["version", "description"]
+
+dependencies = [
+    "networkx[default] >=2.7.1",
+    "matplotlib >=3.5.0",
+    "tabulate >=0.8.9",
+    "igraph >=0.9.10"
+]
+
+[project.optional-dependencies]
+io = [
+    "rdkit-pypi >=2021.9.5.1"    # reading SMILES
+]
