@@ -76,12 +76,30 @@ def graph_nodes_from_element_count(element_count: dict):
     return graph_nodes
 
 
-def tucan_string_to_graph_nodes(tucan_string: str):
+def convert_graph_nodes_element_to_atomic_number(graph_nodes: dict):
+    """ Converts the values of the labels of graph nodes from their element symbol
+        to their atomic number.
+    """
+    graph_nodes_converted = dict()
+    for node, value in graph_nodes.items():
+        graph_nodes_converted[node] = atom_number_dict[value]
+        
+    return graph_nodes_converted
+
+
+def tucan_string_to_graph_nodes(tucan_string: str, use_element_symbols: bool = True):
     """ Transforms a TUCAN string to a dictionary with node labels for graph
         representation. The node labels are enumerated and ordered after the 
         atom number of the elements present in the TUCAN string. 
         
         E.g.: C2H4O => {1: H, 2: H, 3: H, 4: H, 5: C, 6: C, 7: O}
+        
+        Parameters:
+        ------------
+        tucan_string (str): TUCAN string from which graph nodes are created.
+        
+        use_element_symbols (bool): Whether to use element_symbols as node values. Otherwise
+            atomic numbers are used. Defaults to True.
     """
     ## Get sum formula from TUCAN string
     sum_formula = tucan_string.split("/")[0]
@@ -90,7 +108,12 @@ def tucan_string_to_graph_nodes(tucan_string: str):
     element_counts = element_count_from_sum_formula(sum_formula)
     
     # Get graph nodes from element counts
-    return graph_nodes_from_element_count(element_counts)
+    graph_nodes =  graph_nodes_from_element_count(element_counts)
+    
+    if use_element_symbols is False:
+        graph_nodes = convert_graph_nodes_element_to_atomic_number(graph_nodes)
+    
+    return graph_nodes
 
 
 def tucan_string_to_graph_edges(tucan_string: str):
