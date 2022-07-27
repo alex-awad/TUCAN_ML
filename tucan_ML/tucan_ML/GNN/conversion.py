@@ -142,10 +142,10 @@ def tucan_string_to_pyg_data(tucan_string: str):
         as edge features.
     """
     # Get lists with relevant information to construct the graph
-    nodes = tucan_string_to_graph_nodes(tucan_string)
+    nodes = tucan_string_to_graph_nodes(tucan_string, use_element_symbols=False) # Node values cannot be type string
     edges = tucan_string_to_graph_edges(tucan_string)
     bond_lengths = tucan_string_to_graph_bond_lengths(tucan_string)
-    node_list =  [[atom_number_dict[value]] for key, value in nodes.items()]
+    node_list =  [value for key, value in nodes.items()]
     
     # Create tensors
     x = torch.tensor(node_list)
