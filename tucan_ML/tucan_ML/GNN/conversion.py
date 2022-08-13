@@ -24,6 +24,8 @@ def element_count_from_sum_formula(sum_form: str):
     """
     # Split sum formula on letters and numbers
     split_sum_form = re.split("(\d+)", sum_form)
+    if split_sum_form[-1] == "":
+        split_sum_form.pop()
 
     previous_element = ""
     element_count = dict()
@@ -147,16 +149,20 @@ def tucan_string_to_pyg_data(tucan_string: str):
     bond_lengths = tucan_string_to_graph_bond_lengths(tucan_string)
     node_list =  [value for key, value in nodes.items()]
     
+    sum_form = tucan_string.split("/")[0]
+    
     # Create tensors
     x = torch.tensor(node_list)
+    x = x.unsqueeze(1)
     edge_index = torch.tensor(edges)
-    bond_lengths = torch.tensor(bond_lengths)
+    bond_lengths = torch.tensor(bond_lengths).T
     
     # Create graph
     data = Data(
         x=x,
         edge_index=edge_index.t().contiguous(),
-        edge_attr=bond_lengths.t().contiguous()   
+        edge_attr=bond_lengths.t().contiguous(),
+        mol_id=sum_form 
     )
     
     return data
