@@ -22,7 +22,7 @@ def path_to_canonicalized_graph(path: str, get_bond_lengths=False):
 
 def mol3000_file_to_TUCAN_string(
     input_path: str,
-    output_path: str,
+    output_path: str = ".",
     get_bond_lengths=True,
     to_file=True,
     filename=None,
